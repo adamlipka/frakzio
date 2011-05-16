@@ -7,14 +7,10 @@ module Frakzio
   
   module ClassMethods
     def act_as_frakzio(options = {})
-      options.each do |option|
-        validates option, :frakzio => true
+      validates options, :frakzio => true
       
-        define_method((option.to_s + "=").to_sym) do |value|
-          write_attribute(option, frakzionize(value))
-        end
-
-        
+      define_method((options.to_s + "=").to_sym) do |value|
+        write_attribute(options, frakzionize(value))
       end
     end
   end
