@@ -7,6 +7,7 @@ module Frakzio
   
   module ClassMethods
     def act_as_frakzio(attribute)
+      validates attribute, :frakzio => true
       #setter
       define_method((attribute.to_s + "=").to_sym) do |value|
         write_attribute(attribute, frakzionize(value))
@@ -14,7 +15,7 @@ module Frakzio
 
       #getter
       define_method(attribute) do
-        read_attribute(:length) || ""
+        read_attribute(attribute) || ""
       end
       
       include InstanceMethods
