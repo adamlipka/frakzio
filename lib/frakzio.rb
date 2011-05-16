@@ -10,7 +10,7 @@ module Frakzio
       validates attribute, :frakzio => true
       #setter
       define_method((attribute.to_s + "=").to_sym) do |value|
-        write_attribute(attribute, frakzionize(value))
+        self.errors[attribute] ? write_attribute(attribute, value) : write_attribute(attribute, frakzionize(value))
       end
 
       #getter
