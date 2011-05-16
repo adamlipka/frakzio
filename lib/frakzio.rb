@@ -10,7 +10,7 @@ module Frakzio
       validates attribute, :frakzio => true
       #setter
       define_method((attribute.to_s + "=").to_sym) do |value|
-        self.errors[attribute] ? write_attribute(attribute, value) : write_attribute(attribute, frakzionize(value))
+        self.errors[attribute].empty? ? write_attribute(attribute, frakzionize(value)) : write_attribute(attribute, value)
       end
 
       #getter
@@ -27,9 +27,11 @@ module Frakzio
       s = "" unless s
       s = s.to_s
       if s.include?('.')
+        logger.info("strating to parse a decimal #{s}")
         frac = fraction_to_s(decimal_to_array(s))
       else if s.include?('/')
-          frac = fraction_to_s(fraction_to_array(s))
+        logger.info("strating to parse a graction #{s}")
+        frac = fraction_to_s(fraction_to_array(s))
         else
           s == "" ? s = nil : s = s
           frac = s
