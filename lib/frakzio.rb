@@ -1,5 +1,5 @@
 module Frakzio
-  require File.dirname(__FILE__)+'/frakzio/railtie.rb' if defined?(Rails) && Rails::VERSION::MAJOR == 3
+  require File.dirname(__FILE__)+'/frakzio/railtie.rb' if defined?(Rails) && Rails::VERSION::MAJOR >= 3
   
   def self.included(base)
     base.extend(ClassMethods)
@@ -7,14 +7,16 @@ module Frakzio
   
   module ClassMethods
     def act_as_frakzio(attribute)
+      validate :attribute, :frakzio => true
+      
       #setter
       define_method((attribute.to_s + "=").to_sym) do |value|
-        write_attribute(attribute, frakzionize(value))
+        fraction_valid?(attribute, value) ? write_attribute(attribute, frakzionize(value)) : write_attribute(attribute, value)
       end
 
       #getter
       define_method(attribute) do
-        read_attribute(:length) || ""
+        read_attribute(attribute) || ""
       end
       
       include InstanceMethods
@@ -22,6 +24,18 @@ module Frakzio
   end
   
   module InstanceMethods
+    
+    def fraction_valid?(attribute, value)
+      if value && value.class == String
+        if value.match(/\A\d* *\d*\/?\d*\z/).to_s == value || value.match(/\A\d*\.?\d*\z/).to_s == value
+          true
+        else
+          self.errors[attribute] << 'invalid format' unless 
+          false
+        end
+      end
+    end
+    
     def frakzionize(s = "")
       s = "" unless s
       s = s.to_s
