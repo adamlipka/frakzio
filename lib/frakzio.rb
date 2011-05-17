@@ -7,11 +7,11 @@ module Frakzio
   
   module ClassMethods
     def act_as_frakzio(attribute)
-      validates attribute, :frakzio => true
+      validate attribute, :frakzio => true
       
       #setter
       define_method((attribute.to_s + "=").to_sym) do |value|
-        fraction_valid?(attribute, value) ? write_attribute(attribute, frakzionize(value)) : write_attribute(attribute, value)
+        fraction_valid?(value) ? write_attribute(attribute, frakzionize(value)) : write_attribute(attribute, value)
       end
 
       #getter
@@ -25,14 +25,10 @@ module Frakzio
   
   module InstanceMethods
     
-    def fraction_valid?(attribute, value)
-      if value && value.class == String
-        if value.match(/\A\d* *\d*\/?\d*\z/).to_s == value || value.match(/\A\d*\.?\d*\z/).to_s == value
-          true
-        else
-          self.errors[attribute] << 'invalid format' unless 
-          false
-        end
+    def fraction_valid?(value)
+      if value 
+        value = value.to_s
+        (value.match(/\A\d* *\d*\/?\d*\z/).to_s == value || value.match(/\A\d*\.?\d*\z/).to_s == value) ? true : false
       end
     end
     
@@ -40,10 +36,8 @@ module Frakzio
       s = "" unless s
       s = s.to_s
       if s.include?('.')
-        logger.info("strating to parse a decimal #{s}")
         frac = fraction_to_s(decimal_to_array(s))
       else if s.include?('/')
-        logger.info("strating to parse a graction #{s}")
         frac = fraction_to_s(fraction_to_array(s))
         else
           s == "" ? s = nil : s = s
