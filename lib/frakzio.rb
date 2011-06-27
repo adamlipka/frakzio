@@ -6,17 +6,19 @@ module Frakzio
   end
   
   module ClassMethods
-    def act_as_frakzio(attribute)
-      validates attribute, :frakzio => true
+    def act_as_frakzio(*attributes)
+      attributes.each do |attribute|
+        validates attribute, :frakzio => true
       
-      #setter
-      define_method((attribute.to_s + "=").to_sym) do |value|
-        fraction_valid?(value) ? write_attribute(attribute, frakzionize(value)) : write_attribute(attribute, value)
-      end
+        #setter
+        define_method((attribute.to_s + "=").to_sym) do |value|
+          fraction_valid?(value) ? write_attribute(attribute, frakzionize(value)) : write_attribute(attribute, value)
+        end
 
-      #getter
-      define_method(attribute) do
-        read_attribute(attribute) || ""
+        #getter
+        define_method(attribute) do
+          read_attribute(attribute) || ""
+        end
       end
       
       include InstanceMethods
