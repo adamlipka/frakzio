@@ -7,7 +7,7 @@ module Frakzio
   
   module ClassMethods
     def act_as_frakzio(attribute)
-      validate attribute, :frakzio => true
+      validates attribute, :frakzio => true
       
       #setter
       define_method((attribute.to_s + "=").to_sym) do |value|
